@@ -18,13 +18,17 @@ Requires any reasonably modern GHC version.
 
 Install the `random` package if necessary:
 
+```
 $ cabal install --lib random
+```
 
 Then run the script:
 
+```
 $ ghc --run Main.hs
 { "src" : "\\|{#T:l u-.z:w = $z A-.7=n.-8 x.39:O=$L-.8 @w7-d = || @E:q @H.Yk = $V }{#t:c.-c @t-3M @dc4-=K8H4 @B:Q..-}{:H:O0.V E = $s q---:L =|A #| S = |\\\\\\\\{| @w:p-.Z =|{{\\|| @m1U.:cP02 =$s @q }" },
 [...]
+```
 
 Adjust `maxLen`, `weight`, and `numTests` in the code as desired
 (these could be made into command-line flags in the future).
