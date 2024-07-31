@@ -9,7 +9,7 @@ to provide test coverage.
 Some grammar productions are simplified to produce more readable test cases.
 Those have been noted throughout.
 
-== Usage ==
+## Usage
 
 This is meant to be run as a script, but could be made
 into a proper Cabal package in the future.
