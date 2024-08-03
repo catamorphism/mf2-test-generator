@@ -41,16 +41,12 @@ optionalWhitespaceBefore m = join [optional generateWhitespace, m]
 requiredWhitespaceBefore :: IO String -> IO String
 requiredWhitespaceBefore m = join [generateWhitespace, m]
 
--- Simplified for readability. Uncomment various ranges
--- to test all possible characters
 contentChars = map (\ x -> [x]) $ map toEnum $
-  -- n.b. control characters need to be escaped for JSON
-  -- and this code doesn't currently do that
- {- [0x1..0x8] ++ [0x0b..0x0c] ++ [0x0e..0x1f] ++ -} -- [0x21..0x2d]
-  [0x23..0x2d]
+  [0x1..0x8] ++ [0x0b..0x0c] ++ [0x0e..0x1f] ++ [0x21..0x2d]
+  ++ [0x23..0x2d]
   ++ [0x2f..0x3f] ++ [0x41..0x5b] ++ [0x5d..0x7a]
-  -- ++ [0x7e..0x2fff]
-  -- ++ [0x3001..0xd7ff] ++ [0xe000..0x10ffff]
+  ++ [0x7e..0x2fff]
+  ++ [0x3001..0xd7ff] ++ [0xe000..0x10ffff]
 
 generateContentChar :: IO String
 generateContentChar = randomFromList contentChars
