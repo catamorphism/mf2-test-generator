@@ -2,6 +2,7 @@
 
 import Data.Char
 import System.Random
+import Text.Printf
 
 -- Maximum length for repeated elements.
 -- Adjust to get longer strings and lists.
@@ -398,9 +399,15 @@ repeatM n m = do
   rest <- repeatM (n - 1) m
   return $ result:rest
 
--- Should use a proper JSON library. TODO
+escapeChar :: Char -> String
+escapeChar '\\'  = "\\\\"
+escapeChar '\n' = "\\n"
+escapeChar '\t' = "\\t"
+escapeChar '\r' = "\\r"
+escapeChar c = (printf "\\u%.4x") $ fromEnum c
+
 escape :: String -> String
-escape = concatMap (\ c -> if (c == '\\' || isControl c) then ['\\', c] else [c])
+escape = concatMap (\ c -> if (c == '\\' || isControl c) then (escapeChar c) else [c])
 
 formatTest :: String -> String
 formatTest s = "{ \"src\" : \"" ++ (escape s) ++ "\" },\n"
