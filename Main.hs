@@ -18,6 +18,10 @@ weight = 0.75
 numTests :: Int
 numTests = 100
 
+-- Set to true to get spaces only when generating whitespace
+spacesOnly :: Bool
+spacesOnly = True
+
 space, htab, cr, lf :: String
 space = " "
 htab = [toEnum 9]
@@ -86,13 +90,16 @@ bounded m = bounded' maxLen m
 
 -- Uncomment for less readable/more exhaustive test cases
 generateWhitespaceChar :: IO String
-generateWhitespaceChar = return space -- randomFromList [space, htab, cr, lf {- , "\x3000" -}]
+generateWhitespaceChar =
+  if spacesOnly then
+    return space
+  else
+    randomFromList [space, htab, cr, lf, "\x3000" ]
 
 -- Uncomment call to `bounded` for longer whitespace strings
 generateWhitespace :: IO String
-generateWhitespace = {- bounded -} generateWhitespaceChar
+generateWhitespace = bounded generateWhitespaceChar
 
--- TODO -- this has 50% chance of an empty list -- maybe not ideal
 maybeEmptyList :: IO String -> IO String
 maybeEmptyList m = randomFromListIO [bounded m, return ""]
 
