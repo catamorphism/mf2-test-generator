@@ -97,7 +97,7 @@ generateWhitespace :: IO String
 generateWhitespace = bounded generateWhitespaceChar
 
 maybeEmptyList :: IO String -> IO String
-maybeEmptyList m = randomFromListIO [bounded m, return ""]
+maybeEmptyList m = randomFromListIOBiased (bounded m) [return ""]
 
 nonEmptyList = bounded
 
@@ -158,7 +158,7 @@ generateQuotedChar =
 
 generateQuotedLiteral :: IO String
 generateQuotedLiteral = join [return "|",
-                              maybeEmptyList (randomFromListIO [generateQuotedChar, generateEscapedChar]),
+                              maybeEmptyList (randomFromListIOBiased generateQuotedChar [generateEscapedChar]),
                               return "|"]
 
 generateUnquotedLiteral :: IO String
