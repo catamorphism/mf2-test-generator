@@ -375,7 +375,10 @@ generateDeclarations :: IO String
 generateDeclarations = randomFromListIOBiased generateLocalDeclaration [generateInputDeclaration, generateReservedStatement]
 
 generateKey :: IO String
-generateKey = randomFromListIO [generateLiteral, return "*"]
+-- For now, never generate fallback keys because fallbackVariant takes care of that.
+-- This avoids a "duplicate variant" error at the expense of not testing cases like
+-- "* foo" and "foo *"
+generateKey = generateLiteral
 
 generateVariant :: Int -> IO String
 generateVariant numKeys =
@@ -399,7 +402,8 @@ generateSelector =
     return "{",
     optional generateWhitespace,
     randomFromListIO [generateLiteral, generateVariable],
-    join [generateWhitespace, generateAnnotation],
+    -- To avoid ICU4J "unknown selector type" error, always use :string
+    join [generateWhitespace, return ":string"],
     generateAttributeList,
     optional generateWhitespace,
     return "}"
