@@ -4,6 +4,12 @@ import Data.Char
 import System.Random
 import Text.Printf
 
+{-
+  Messages are constructed to avoid most data model errors.
+  The exceptions are "duplicate declaration" and "duplicate option name",
+  where we rely on probability to avoid duplicate names.
+-}
+
 -- Maximum length for repeated elements.
 -- Adjust to get longer strings and lists.
 maxLen :: Int
@@ -382,7 +388,21 @@ fallbackVariant numKeys =
         optional generateWhitespace,
         generateQuotedPattern]
 
-generateSelector = generateExpression
+generateSelector :: IO String
+generateSelector =
+-- In order to avoid a "missing selector annotation" data model error,
+-- require an expression with an annotation
+-- This is stricter than the actual requirement, but simpler to generate
+  join [
+    return "{",
+    optional generateWhitespace,
+    randomFromListIO [generateLiteral, generateVariable],
+    join [generateWhitespace, generateAnnotation],
+    generateAttributeList,
+    optional generateWhitespace,
+    return "}"
+    ]
+
 generateMatchStatement :: Int -> IO String
 generateMatchStatement numSelectors =
   join [return ".match",
