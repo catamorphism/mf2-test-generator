@@ -95,7 +95,9 @@ optional m = do
   if (omit) then return "" else m
 
 bounded :: IO String -> IO String
-bounded m = bounded' maxLen m
+bounded = listWithLen maxLen
+
+listWithLen n m = bounded' n m
   where bounded' n m | n == 0 = m
         bounded' n m = do
           s <- m
@@ -367,23 +369,26 @@ generateDeclarations = randomFromListIOBiased generateLocalDeclaration [generate
 generateKey :: IO String
 generateKey = randomFromListIO [generateLiteral, return "*"]
 
-generateVariant :: IO String
-generateVariant =
+generateVariant :: Int -> IO String
+generateVariant numKeys =
   join [generateKey,
-        maybeEmptyList (requiredWhitespaceBefore generateKey),
+        listWithLen (numKeys - 1) (requiredWhitespaceBefore generateKey),
         optional generateWhitespace,
         generateQuotedPattern]
 
 generateSelector = generateExpression
-generateMatchStatement :: IO String
-generateMatchStatement =
+generateMatchStatement :: Int -> IO String
+generateMatchStatement numSelectors =
   join [return ".match",
-        nonEmptyList (optionalWhitespaceBefore generateSelector)]
+        listWithLen numSelectors (optionalWhitespaceBefore generateSelector)]
 
 generateMatcher :: IO String
-generateMatcher =
-  join [generateMatchStatement,
-        nonEmptyList (optionalWhitespaceBefore generateVariant)]
+generateMatcher = do
+  -- Avoid a "variant key mismatch" data model error
+  -- by constraining the selector list and variant list to be the same length
+  numSelectors <- randomRIO (1, maxLen)
+  join [generateMatchStatement numSelectors,
+        (nonEmptyList (optionalWhitespaceBefore (generateVariant numSelectors)))]
 
 generateQuotedPattern :: IO String
 generateQuotedPattern = join [return "{{", generatePattern, return "}}"]
