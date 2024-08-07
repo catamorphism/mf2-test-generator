@@ -376,6 +376,12 @@ generateVariant numKeys =
         optional generateWhitespace,
         generateQuotedPattern]
 
+fallbackVariant :: Int -> IO String
+fallbackVariant numKeys =
+  join [return (concat $ take numKeys (repeat "* ")),
+        optional generateWhitespace,
+        generateQuotedPattern]
+
 generateSelector = generateExpression
 generateMatchStatement :: Int -> IO String
 generateMatchStatement numSelectors =
@@ -388,7 +394,10 @@ generateMatcher = do
   -- by constraining the selector list and variant list to be the same length
   numSelectors <- randomRIO (1, maxLen)
   join [generateMatchStatement numSelectors,
-        (nonEmptyList (optionalWhitespaceBefore (generateVariant numSelectors)))]
+        nonEmptyList (optionalWhitespaceBefore (generateVariant numSelectors)),
+        -- Avoid a "missing fallback variant" data model error by including
+        -- a variant with all '*' keys
+        optionalWhitespaceBefore (fallbackVariant numSelectors)]
 
 generateQuotedPattern :: IO String
 generateQuotedPattern = join [return "{{", generatePattern, return "}}"]
