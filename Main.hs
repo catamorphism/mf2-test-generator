@@ -103,8 +103,10 @@ optional m = do
 bounded :: IO String -> IO String
 bounded = listWithLen maxLen
 
+listWithLen :: Int -> IO String -> IO String
 listWithLen n m = bounded' n m
-  where bounded' n m | n == 0 = m
+  where bounded' :: Int -> IO String -> IO String
+        bounded' n m | n == 0 = return ""
         bounded' n m = do
           s <- m
           rest <- bounded' (n - 1) m
